@@ -1,0 +1,827 @@
+# SIGE - Sistema Integrado de Gestão Escolar
+
+## Estrutura de Banco de Dados Completa
+
+### Database Principal: sige_db
+
+---
+
+## MÓDULO DE USUÁRIOS E AUTENTICAÇÃO
+
+### 1. Tabela: usuarios
+- id (PK, AUTO_INCREMENT)
+- nome (VARCHAR 100)
+- email (VARCHAR 100, UNIQUE)
+- senha_hash (VARCHAR 255)
+- tipo_usuario (ENUM: 'admin', 'diretor', 'professor', 'aluno', 'responsavel')
+- status (ENUM: 'ativo', 'inativo', 'suspenso')
+- data_criacao (TIMESTAMP)
+- data_ultima_atualizacao (TIMESTAMP)
+- foto_perfil (VARCHAR 255)
+- telefone (VARCHAR 20)
+- cpf (VARCHAR 14, UNIQUE)
+
+### 2. Tabela: perfis_acesso
+- id (PK, AUTO_INCREMENT)
+- nome_perfil (VARCHAR 50)
+- descricao (TEXT)
+- permissoes (JSON)
+- status (BOOLEAN)
+
+### 3. Tabela: sessoes
+- id (PK, AUTO_INCREMENT)
+- usuario_id (FK -> usuarios.id)
+- token (VARCHAR 255, UNIQUE)
+- data_criacao (TIMESTAMP)
+- data_expiracao (TIMESTAMP)
+- ip_address (VARCHAR 45)
+- user_agent (TEXT)
+
+---
+
+## MÓDULO INSTITUCIONAL
+
+### 4. Tabela: escolas
+- id (PK, AUTO_INCREMENT)
+- nome (VARCHAR 150)
+- cnpj (VARCHAR 18, UNIQUE)
+- endereco (VARCHAR 255)
+- cidade (VARCHAR 100)
+- estado (VARCHAR 2)
+- cep (VARCHAR 9)
+- telefone (VARCHAR 20)
+- email (VARCHAR 100)
+- diretor_id (FK -> usuarios.id)
+- status (ENUM: 'ativa', 'inativa')
+
+### 5. Tabela: cursos
+- id (PK, AUTO_INCREMENT)
+- escola_id (FK -> escolas.id)
+- nome (VARCHAR 100)
+- codigo (VARCHAR 10, UNIQUE)
+- descricao (TEXT)
+- duracao_anos (INT)
+- nivel_ensino (ENUM: 'infantil', 'fundamental1', 'fundamental2', 'medio', 'tecnico', 'superior')
+- status (BOOLEAN)
+
+### 6. Tabela: disciplinas
+- id (PK, AUTO_INCREMENT)
+- nome (VARCHAR 100)
+- codigo (VARCHAR 10, UNIQUE)
+- descricao (TEXT)
+- carga_horaria_total (INT)
+- curso_id (FK -> cursos.id)
+- status (BOOLEAN)
+
+---
+
+## MÓDULO DE ALUNOS
+
+### 7. Tabela: alunos
+- id (PK, AUTO_INCREMENT)
+- usuario_id (FK -> usuarios.id)
+- matricula (VARCHAR 20, UNIQUE)
+- nome_completo (VARCHAR 150)
+- data_nascimento (DATE)
+- sexo (ENUM: 'M', 'F', 'Outro')
+- rg (VARCHAR 15)
+- cpf (VARCHAR 14, UNIQUE)
+- endereco (VARCHAR 255)
+- cidade (VARCHAR 100)
+- estado (VARCHAR 2)
+- cep (VARCHAR 9)
+- telefone_responsavel (VARCHAR 20)
+- email_responsavel (VARCHAR 100)
+- status (ENUM: 'matriculado', 'transferido', 'evadido', 'formado')
+- data_matricula (DATE)
+- escola_id (FK -> escolas.id)
+
+### 8. Tabela: responsaveis
+- id (PK, AUTO_INCREMENT)
+- usuario_id (FK -> usuarios.id)
+- nome_completo (VARCHAR 150)
+- cpf (VARCHAR 14, UNIQUE)
+- rg (VARCHAR 15)
+- telefone (VARCHAR 20)
+- email (VARCHAR 100)
+- endereco (VARCHAR 255)
+- parentesco (ENUM: 'pai', 'mae', 'avô', 'avó', 'tutor', 'outro')
+- principal (BOOLEAN)
+
+### 9. Tabela: aluno_responsavel
+- id (PK, AUTO_INCREMENT)
+- aluno_id (FK -> alunos.id)
+- responsavel_id (FK -> responsaveis.id)
+- data_vinculo (TIMESTAMP)
+
+---
+
+## MÓDULO DE PROFESSORES
+
+### 10. Tabela: professores
+- id (PK, AUTO_INCREMENT)
+- usuario_id (FK -> usuarios.id)
+- codigo_professor (VARCHAR 15, UNIQUE)
+- nome_completo (VARCHAR 150)
+- cpf (VARCHAR 14, UNIQUE)
+- rg (VARCHAR 15)
+- data_nascimento (DATE)
+- formacao (VARCHAR 255)
+- especializacao (TEXT)
+- data_admissao (DATE)
+- status (ENUM: 'ativo', 'licenca', 'afastado', 'demitido')
+- salario (DECIMAL 10,2)
+- carga_horaria_semanal (INT)
+- escola_id (FK -> escolas.id)
+
+### 11. Tabela: professor_disciplina
+- id (PK, AUTO_INCREMENT)
+- professor_id (FK -> professores.id)
+- disciplina_id (FK -> disciplinas.id)
+- ano_letivo (YEAR)
+- status (BOOLEAN)
+
+---
+
+## MÓDULO ACADÊMICO
+
+### 12. Tabela: turmas
+- id (PK, AUTO_INCREMENT)
+- codigo (VARCHAR 15, UNIQUE)
+- nome (VARCHAR 100)
+- ano_letivo (YEAR)
+- serie (VARCHAR 20)
+- turno (ENUM: 'matutino', 'vespertino', 'noturno', 'integral')
+- capacidade_maxima (INT)
+- curso_id (FK -> cursos.id)
+- professor_coordenador_id (FK -> professores.id)
+- sala (VARCHAR 20)
+- status (ENUM: 'ativa', 'finalizada', 'cancelada')
+
+### 13. Tabela: matriculas
+- id (PK, AUTO_INCREMENT)
+- numero_matricula (VARCHAR 20, UNIQUE)
+- aluno_id (FK -> alunos.id)
+- turma_id (FK -> turmas.id)
+- ano_letivo (YEAR)
+- data_matricula (DATE)
+- status (ENUM: 'ativa', 'trancada', 'transferida', 'concluida')
+- observacoes (TEXT)
+
+### 14. Tabela: horarios
+- id (PK, AUTO_INCREMENT)
+- turma_id (FK -> turmas.id)
+- disciplina_id (FK -> disciplinas.id)
+- professor_id (FK -> professores.id)
+- dia_semana (ENUM: 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado')
+- hora_inicio (TIME)
+- hora_fim (TIME)
+- sala (VARCHAR 20)
+
+---
+
+## MÓDULO DE NOTAS E AVALIAÇÕES
+
+### 15. Tabela: avaliacoes
+- id (PK, AUTO_INCREMENT)
+- disciplina_id (FK -> disciplinas.id)
+- turma_id (FK -> turmas.id)
+- professor_id (FK -> professores.id)
+- nome (VARCHAR 100)
+- tipo (ENUM: 'prova', 'trabalho', 'seminario', 'atividade', 'participacao')
+- data_aplicacao (DATE)
+- valor_maximo (DECIMAL 5,2)
+- peso (DECIMAL 3,2)
+- bimestre (INT)
+- status (BOOLEAN)
+
+### 16. Tabela: notas
+- id (PK, AUTO_INCREMENT)
+- avaliacao_id (FK -> avaliacoes.id)
+- aluno_id (FK -> alunos.id)
+- nota (DECIMAL 5,2)
+- observacoes (TEXT)
+- data_lancamento (TIMESTAMP)
+- professor_id (FK -> professores.id)
+
+### 17. Tabela: boletins
+- id (PK, AUTO_INCREMENT)
+- aluno_id (FK -> alunos.id)
+- disciplina_id (FK -> disciplinas.id)
+- bimestre (INT)
+- ano_letivo (YEAR)
+- nota_final (DECIMAL 5,2)
+- media_bimestre (DECIMAL 5,2)
+- situacao (ENUM: 'aprovado', 'recuperacao', 'reprovado')
+- faltas (INT)
+
+---
+
+## MÓDULO DE FREQUÊNCIA
+
+### 18. Tabela: frequencias
+- id (PK, AUTO_INCREMENT)
+- aluno_id (FK -> alunos.id)
+- disciplina_id (FK -> disciplinas.id)
+- data_aula (DATE)
+- presente (BOOLEAN)
+- justificativa (TEXT)
+- professor_id (FK -> professores.id)
+- horario_id (FK -> horarios.id)
+
+### 19. Tabela: chamadas
+- id (PK, AUTO_INCREMENT)
+- turma_id (FK -> turmas.id)
+- disciplina_id (FK -> disciplinas.id)
+- professor_id (FK -> professores.id)
+- data_chamada (DATE)
+- hora_inicio (TIME)
+- hora_fim (TIME)
+- conteudo_ministrado (TEXT)
+- status (ENUM: 'realizada', 'cancelada', 'reposta')
+
+---
+
+## MÓDULO DE COMUNICAÇÃO
+
+### 20. Tabela: comunicados
+- id (PK, AUTO_INCREMENT)
+- titulo (VARCHAR 200)
+- conteudo (TEXT)
+- autor_id (FK -> usuarios.id)
+- data_publicacao (TIMESTAMP)
+- data_expiracao (DATE)
+- publico_alvo (ENUM: 'todos', 'alunos', 'professores', 'responsaveis', 'administrativo')
+- prioridade (ENUM: 'baixa', 'media', 'alta', 'urgente')
+- status (ENUM: 'rascunho', 'publicado', 'expirado')
+- anexos (JSON)
+
+### 21. Tabela: mensagens
+- id (PK, AUTO_INCREMENT)
+- remetente_id (FK -> usuarios.id)
+- destinatario_id (FK -> usuarios.id)
+- assunto (VARCHAR 200)
+- conteudo (TEXT)
+- data_envio (TIMESTAMP)
+- data_leitura (TIMESTAMP)
+- status (ENUM: 'enviada', 'lida', 'respondida')
+- anexos (JSON)
+
+---
+
+## MÓDULO FINANCEIRO
+
+### 22. Tabela: planos_pagamento
+- id (PK, AUTO_INCREMENT)
+- nome (VARCHAR 100)
+- valor_mensalidade (DECIMAL 10,2)
+- descricao (TEXT)
+- curso_id (FK -> cursos.id)
+- ativo (BOOLEAN)
+
+### 23. Tabela: financeiro_aluno
+- id (PK, AUTO_INCREMENT)
+- aluno_id (FK -> alunos.id)
+- plano_id (FK -> planos_pagamento.id)
+- mes_referencia (DATE)
+- valor_devido (DECIMAL 10,2)
+- valor_pago (DECIMAL 10,2)
+- data_vencimento (DATE)
+- data_pagamento (DATE)
+- status (ENUM: 'pendente', 'pago', 'atrasado', 'cancelado')
+- observacoes (TEXT)
+
+---
+
+## MÓDULO DE RELATÓRIOS
+
+### 24. Tabela: relatorios_gerados
+- id (PK, AUTO_INCREMENT)
+- tipo_relatorio (VARCHAR 100)
+- usuario_id (FK -> usuarios.id)
+- parametros (JSON)
+- data_geracao (TIMESTAMP)
+- arquivo_path (VARCHAR 255)
+- status (ENUM: 'processando', 'concluido', 'erro')
+
+---
+
+## MÓDULO DE CONFIGURAÇÕES
+
+### 25. Tabela: configuracoes_sistema
+- id (PK, AUTO_INCREMENT)
+- chave (VARCHAR 100, UNIQUE)
+- valor (TEXT)
+- descricao (TEXT)
+- categoria (VARCHAR 50)
+- data_alteracao (TIMESTAMP)
+- usuario_alteracao_id (FK -> usuarios.id)
+
+### 26. Tabela: logs_sistema
+- id (PK, AUTO_INCREMENT)
+- usuario_id (FK -> usuarios.id)
+- acao (VARCHAR 100)
+- tabela_afetada (VARCHAR 50)
+- registro_id (INT)
+- dados_anteriores (JSON)
+- dados_novos (JSON)
+- ip_address (VARCHAR 45)
+- data_acao (TIMESTAMP)
+
+---
+
+## RESUMO ESTATÍSTICO
+
+Total de Tabelas: 26
+Módulos: 8
+Relacionamentos: ~45 Foreign Keys
+Índices Sugeridos: ~60
+
+---
+
+## COMANDOS SQL PARA CRIAÇÃO
+
+-- Exemplo de criação do banco
+CREATE DATABASE sige_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Índices principais sugeridos
+CREATE INDEX idx_usuarios_email ON usuarios(email);
+CREATE INDEX idx_alunos_matricula ON alunos(matricula);
+CREATE INDEX idx_professores_codigo ON professores(codigo_professor);
+CREATE INDEX idx_turmas_ano_letivo ON turmas(ano_letivo);
+CREATE INDEX idx_notas_aluno_disciplina ON notas(aluno_id, disciplina_id);
+
+---
+
+## 🚀 API ENDPOINTS - ESTRUTURA COMPLETA
+
+### Base URL: https://api.sige.edu.br/v1
+
+---
+
+## 🔐 MÓDULO DE AUTENTICAÇÃO
+
+### Auth & Sessions
+- POST   /auth/login                    - Login do usuário
+- POST   /auth/logout                   - Logout do usuário  
+- POST   /auth/refresh                  - Renovar token
+- POST   /auth/forgot-password          - Solicitar redefinição de senha
+- POST   /auth/reset-password           - Redefinir senha
+- POST   /auth/change-password          - Alterar senha
+- GET    /auth/me                       - Dados do usuário logado
+- GET    /auth/verify-token             - Verificar validade do token
+
+### Usuários
+- GET    /usuarios                      - Listar usuários (com filtros)
+- GET    /usuarios/{id}                 - Obter usuário específico
+- POST   /usuarios                      - Criar novo usuário
+- PUT    /usuarios/{id}                 - Atualizar usuário
+- DELETE /usuarios/{id}                 - Deletar usuário
+- PATCH  /usuarios/{id}/status          - Alterar status (ativo/inativo)
+- POST   /usuarios/{id}/foto            - Upload foto de perfil
+- GET    /usuarios/tipos                - Listar tipos de usuário
+
+### Perfis de Acesso
+- GET    /perfis-acesso                 - Listar perfis de acesso
+- GET    /perfis-acesso/{id}            - Obter perfil específico
+- POST   /perfis-acesso                 - Criar novo perfil
+- PUT    /perfis-acesso/{id}            - Atualizar perfil
+- DELETE /perfis-acesso/{id}            - Deletar perfil
+
+---
+
+## 🏫 MÓDULO INSTITUCIONAL
+
+### Escolas
+- GET    /escolas                       - Listar escolas
+- GET    /escolas/{id}                  - Obter escola específica
+- POST   /escolas                       - Criar nova escola
+- PUT    /escolas/{id}                  - Atualizar escola
+- DELETE /escolas/{id}                  - Deletar escola
+- GET    /escolas/{id}/estatisticas     - Estatísticas da escola
+
+### Cursos
+- GET    /cursos                        - Listar cursos
+- GET    /cursos/{id}                   - Obter curso específico
+- POST   /cursos                        - Criar novo curso
+- PUT    /cursos/{id}                   - Atualizar curso
+- DELETE /cursos/{id}                   - Deletar curso
+- GET    /cursos/{id}/disciplinas       - Listar disciplinas do curso
+- GET    /cursos/{id}/turmas            - Listar turmas do curso
+
+### Disciplinas
+- GET    /disciplinas                   - Listar disciplinas
+- GET    /disciplinas/{id}              - Obter disciplina específica
+- POST   /disciplinas                   - Criar nova disciplina
+- PUT    /disciplinas/{id}              - Atualizar disciplina
+- DELETE /disciplinas/{id}              - Deletar disciplina
+- GET    /disciplinas/{id}/professores  - Professores da disciplina
+- GET    /disciplinas/{id}/horarios     - Horários da disciplina
+
+---
+
+## 🎓 MÓDULO DE ALUNOS
+
+### Alunos
+- GET    /alunos                        - Listar alunos (com filtros)
+- GET    /alunos/{id}                   - Obter aluno específico
+- POST   /alunos                        - Criar novo aluno
+- PUT    /alunos/{id}                   - Atualizar aluno
+- DELETE /alunos/{id}                   - Deletar aluno
+- GET    /alunos/{id}/boletim           - Boletim do aluno
+- GET    /alunos/{id}/frequencia        - Frequência do aluno
+- GET    /alunos/{id}/financeiro        - Situação financeira
+- GET    /alunos/{id}/responsaveis      - Responsáveis do aluno
+- POST   /alunos/{id}/responsaveis      - Vincular responsável
+- DELETE /alunos/{id}/responsaveis/{responsavel_id} - Desvincular responsável
+- GET    /alunos/{id}/historico         - Histórico escolar
+- GET    /alunos/buscar                 - Buscar aluno por matrícula/nome
+
+### Responsáveis
+- GET    /responsaveis                  - Listar responsáveis
+- GET    /responsaveis/{id}             - Obter responsável específico
+- POST   /responsaveis                  - Criar novo responsável
+- PUT    /responsaveis/{id}             - Atualizar responsável
+- DELETE /responsaveis/{id}             - Deletar responsável
+- GET    /responsaveis/{id}/alunos      - Alunos do responsável
+
+---
+
+## 👨‍🏫 MÓDULO DE PROFESSORES
+
+### Professores
+- GET    /professores                   - Listar professores
+- GET    /professores/{id}              - Obter professor específico
+- POST   /professores                   - Criar novo professor
+- PUT    /professores/{id}              - Atualizar professor
+- DELETE /professores/{id}              - Deletar professor
+- GET    /professores/{id}/disciplinas  - Disciplinas do professor
+- GET    /professores/{id}/turmas       - Turmas do professor
+- GET    /professores/{id}/horarios     - Horários do professor
+- POST   /professores/{id}/disciplinas  - Vincular disciplina
+- DELETE /professores/{id}/disciplinas/{disciplina_id} - Desvincular disciplina
+
+---
+
+## 📚 MÓDULO ACADÊMICO
+
+### Turmas
+- GET    /turmas                        - Listar turmas
+- GET    /turmas/{id}                   - Obter turma específica
+- POST   /turmas                        - Criar nova turma
+- PUT    /turmas/{id}                   - Atualizar turma
+- DELETE /turmas/{id}                   - Deletar turma
+- GET    /turmas/{id}/alunos            - Alunos da turma
+- GET    /turmas/{id}/horarios          - Horários da turma
+- GET    /turmas/{id}/estatisticas      - Estatísticas da turma
+- POST   /turmas/{id}/alunos            - Matricular aluno na turma
+
+### Matrículas
+- GET    /matriculas                    - Listar matrículas
+- GET    /matriculas/{id}               - Obter matrícula específica
+- POST   /matriculas                    - Criar nova matrícula
+- PUT    /matriculas/{id}               - Atualizar matrícula
+- DELETE /matriculas/{id}               - Deletar matrícula
+- PATCH  /matriculas/{id}/status        - Alterar status da matrícula
+- GET    /matriculas/buscar             - Buscar matrícula
+
+### Horários
+- GET    /horarios                      - Listar horários
+- GET    /horarios/{id}                 - Obter horário específico
+- POST   /horarios                      - Criar novo horário
+- PUT    /horarios/{id}                 - Atualizar horário
+- DELETE /horarios/{id}                 - Deletar horário
+- GET    /horarios/turma/{turma_id}     - Horários da turma
+- GET    /horarios/professor/{professor_id} - Horários do professor
+
+---
+
+## 📊 MÓDULO DE NOTAS E AVALIAÇÕES
+
+### Avaliações
+- GET    /avaliacoes                    - Listar avaliações
+- GET    /avaliacoes/{id}               - Obter avaliação específica
+- POST   /avaliacoes                    - Criar nova avaliação
+- PUT    /avaliacoes/{id}               - Atualizar avaliação
+- DELETE /avaliacoes/{id}               - Deletar avaliação
+- GET    /avaliacoes/{id}/notas         - Notas da avaliação
+- POST   /avaliacoes/{id}/notas         - Lançar notas em lote
+
+### Notas
+- GET    /notas                         - Listar notas (com filtros)
+- GET    /notas/{id}                    - Obter nota específica
+- POST   /notas                         - Lançar nova nota
+- PUT    /notas/{id}                    - Atualizar nota
+- DELETE /notas/{id}                    - Deletar nota
+- GET    /notas/aluno/{aluno_id}        - Notas do aluno
+- GET    /notas/disciplina/{disciplina_id} - Notas por disciplina
+- POST   /notas/lote                    - Lançamento em lote
+
+### Boletins
+- GET    /boletins                      - Listar boletins
+- GET    /boletins/{id}                 - Obter boletim específico
+- GET    /boletins/aluno/{aluno_id}     - Boletim do aluno
+- GET    /boletins/turma/{turma_id}     - Boletins da turma
+- POST   /boletins/gerar                - Gerar boletins
+- GET    /boletins/{id}/pdf             - Download do boletim em PDF
+
+---
+
+## 📅 MÓDULO DE FREQUÊNCIA
+
+### Frequências
+- GET    /frequencias                   - Listar frequências
+- GET    /frequencias/{id}              - Obter frequência específica
+- POST   /frequencias                   - Registrar frequência
+- PUT    /frequencias/{id}              - Atualizar frequência
+- DELETE /frequencias/{id}              - Deletar frequência
+- GET    /frequencias/aluno/{aluno_id}  - Frequência do aluno
+- GET    /frequencias/turma/{turma_id}  - Frequência da turma
+- POST   /frequencias/lote              - Registrar frequência em lote
+
+### Chamadas
+- GET    /chamadas                      - Listar chamadas
+- GET    /chamadas/{id}                 - Obter chamada específica
+- POST   /chamadas                      - Criar nova chamada
+- PUT    /chamadas/{id}                 - Atualizar chamada
+- DELETE /chamadas/{id}                 - Deletar chamada
+- GET    /chamadas/professor/{professor_id} - Chamadas do professor
+- POST   /chamadas/{id}/fechar          - Fechar chamada
+- GET    /chamadas/{id}/frequencias     - Frequências da chamada
+
+---
+
+## 📢 MÓDULO DE COMUNICAÇÃO
+
+### Comunicados
+- GET    /comunicados                   - Listar comunicados
+- GET    /comunicados/{id}              - Obter comunicado específico
+- POST   /comunicados                   - Criar novo comunicado
+- PUT    /comunicados/{id}              - Atualizar comunicado
+- DELETE /comunicados/{id}              - Deletar comunicado
+- POST   /comunicados/{id}/publicar     - Publicar comunicado
+- GET    /comunicados/publicos          - Comunicados públicos ativos
+- POST   /comunicados/{id}/anexos       - Upload de anexos
+
+### Mensagens
+- GET    /mensagens                     - Listar mensagens do usuário
+- GET    /mensagens/{id}                - Obter mensagem específica
+- POST   /mensagens                     - Enviar nova mensagem
+- PUT    /mensagens/{id}                - Atualizar mensagem
+- DELETE /mensagens/{id}                - Deletar mensagem
+- PATCH  /mensagens/{id}/ler            - Marcar como lida
+- GET    /mensagens/enviadas            - Mensagens enviadas
+- GET    /mensagens/recebidas           - Mensagens recebidas
+- GET    /mensagens/nao-lidas           - Mensagens não lidas
+
+---
+
+## 💰 MÓDULO FINANCEIRO
+
+### Planos de Pagamento
+- GET    /planos-pagamento              - Listar planos
+- GET    /planos-pagamento/{id}         - Obter plano específico
+- POST   /planos-pagamento              - Criar novo plano
+- PUT    /planos-pagamento/{id}         - Atualizar plano
+- DELETE /planos-pagamento/{id}         - Deletar plano
+
+### Financeiro Aluno
+- GET    /financeiro                    - Listar registros financeiros
+- GET    /financeiro/{id}               - Obter registro específico
+- POST   /financeiro                    - Criar novo registro
+- PUT    /financeiro/{id}               - Atualizar registro
+- DELETE /financeiro/{id}               - Deletar registro
+- GET    /financeiro/aluno/{aluno_id}   - Financeiro do aluno
+- POST   /financeiro/{id}/pagamento     - Registrar pagamento
+- GET    /financeiro/inadimplentes      - Listar inadimplentes
+- GET    /financeiro/relatorio          - Relatório financeiro
+
+---
+
+## 📈 MÓDULO DE RELATÓRIOS
+
+### Relatórios
+- GET    /relatorios                    - Listar relatórios disponíveis
+- POST   /relatorios/gerar              - Gerar novo relatório
+- GET    /relatorios/{id}               - Obter relatório específico
+- GET    /relatorios/{id}/download      - Download do relatório
+- DELETE /relatorios/{id}               - Deletar relatório
+- GET    /relatorios/tipos              - Tipos de relatórios disponíveis
+
+### Relatórios Específicos
+- POST   /relatorios/boletins           - Relatório de boletins
+- POST   /relatorios/frequencia         - Relatório de frequência
+- POST   /relatorios/financeiro         - Relatório financeiro
+- POST   /relatorios/matriculas         - Relatório de matrículas
+- POST   /relatorios/notas              - Relatório de notas
+- POST   /relatorios/turmas             - Relatório de turmas
+- POST   /relatorios/professores        - Relatório de professores
+
+---
+
+## ⚙️ MÓDULO DE CONFIGURAÇÕES
+
+### Configurações do Sistema
+- GET    /configuracoes                 - Listar configurações
+- GET    /configuracoes/{chave}         - Obter configuração específica
+- PUT    /configuracoes/{chave}         - Atualizar configuração
+- GET    /configuracoes/categorias      - Listar categorias
+
+### Logs do Sistema
+- GET    /logs                          - Listar logs do sistema
+- GET    /logs/{id}                     - Obter log específico
+- GET    /logs/usuario/{usuario_id}     - Logs do usuário
+- DELETE /logs/limpar                   - Limpar logs antigos
+
+---
+
+## 📊 MÓDULO DE DASHBOARD E ESTATÍSTICAS
+
+### Dashboard
+- GET    /dashboard/geral               - Dados gerais do dashboard
+- GET    /dashboard/estatisticas        - Estatísticas principais
+- GET    /dashboard/graficos            - Dados para gráficos
+- GET    /dashboard/alertas             - Alertas do sistema
+- GET    /dashboard/atividades-recentes - Atividades recentes
+
+### Estatísticas
+- GET    /estatisticas/alunos           - Estatísticas de alunos
+- GET    /estatisticas/professores      - Estatísticas de professores
+- GET    /estatisticas/turmas           - Estatísticas de turmas
+- GET    /estatisticas/financeiro       - Estatísticas financeiras
+- GET    /estatisticas/frequencia       - Estatísticas de frequência
+- GET    /estatisticas/notas            - Estatísticas de notas
+
+---
+
+## 🔍 MÓDULO DE BUSCA E FILTROS
+
+### Busca Global
+- GET    /buscar                        - Busca global no sistema
+- GET    /buscar/alunos                 - Buscar alunos
+- GET    /buscar/professores            - Buscar professores
+- GET    /buscar/turmas                 - Buscar turmas
+- GET    /buscar/disciplinas            - Buscar disciplinas
+
+---
+
+## 📁 MÓDULO DE ARQUIVOS E UPLOADS
+
+### Upload de Arquivos
+- POST   /upload/foto-perfil            - Upload de foto de perfil
+- POST   /upload/documentos             - Upload de documentos
+- POST   /upload/anexos                 - Upload de anexos
+- DELETE /upload/{id}                   - Deletar arquivo
+- GET    /upload/{id}/download          - Download de arquivo
+
+---
+
+## 🔔 MÓDULO DE NOTIFICAÇÕES
+
+### Notificações
+- GET    /notificacoes                  - Listar notificações do usuário
+- GET    /notificacoes/{id}             - Obter notificação específica
+- PATCH  /notificacoes/{id}/ler         - Marcar como lida
+- DELETE /notificacoes/{id}             - Deletar notificação
+- GET    /notificacoes/nao-lidas        - Notificações não lidas
+- POST   /notificacoes/marcar-todas-lidas - Marcar todas como lidas
+
+---
+
+## 📅 MÓDULO DE CALENDÁRIO
+
+### Eventos do Calendário
+- GET    /calendario/eventos            - Listar eventos
+- GET    /calendario/eventos/{id}       - Obter evento específico
+- POST   /calendario/eventos            - Criar novo evento
+- PUT    /calendario/eventos/{id}       - Atualizar evento
+- DELETE /calendario/eventos/{id}       - Deletar evento
+- GET    /calendario/mes/{ano}/{mes}    - Eventos do mês
+- GET    /calendario/usuario/{usuario_id} - Eventos do usuário
+
+---
+
+## 🚦 STATUS CODES PADRÃO
+
+- 200 - OK (Sucesso)
+- 201 - Created (Criado com sucesso)
+- 204 - No Content (Sucesso sem retorno)
+- 400 - Bad Request (Erro de validação)
+- 401 - Unauthorized (Não autenticado)
+- 403 - Forbidden (Sem permissão)
+- 404 - Not Found (Não encontrado)
+- 409 - Conflict (Conflito de dados)
+- 422 - Unprocessable Entity (Erro de validação)
+- 500 - Internal Server Error (Erro interno)
+
+---
+
+## 🔑 AUTENTICAÇÃO
+
+### Headers Obrigatórios
+- Authorization: Bearer {token}
+- Content-Type: application/json
+- Accept: application/json
+
+### Parâmetros de Paginação
+- page: Número da página (padrão: 1)
+- per_page: Itens por página (padrão: 15, máximo: 100)
+- sort: Campo para ordenação
+- order: Direção da ordenação (asc|desc)
+
+### Parâmetros de Filtro Comuns
+- search: Busca textual
+- status: Filtrar por status
+- created_at: Filtrar por data de criação
+- updated_at: Filtrar por data de atualização
+
+---
+
+## CREDENCIAIS DE ACESSO DO SISTEMA
+
+Email: admin@sige.edu.br
+Senha: 123456
+
+Usuário Alternativo:
+Email: usuario@sige.edu.br
+Senha: 123456
+
+Professor:
+Email: professor@sige.edu.br
+Senha: 123456
+
+---
+
+## ESTRUTURA DE PASTAS DO PROJETO ANGULAR
+
+src/
+  app/
+    core/
+      services/
+        conexoes.service.ts
+        dados.service.ts
+        auth.service.ts
+        api.service.ts
+    features/
+      autenticacao/
+        autenticacao.component.*
+        painel/
+          painel.component.*
+      navegacao/
+        inicio/
+          inicio.component.*
+        login/
+          login.component.*
+        menu/
+          menu.component.*
+        navegacao/
+          navegacao.component.*
+    shared/
+      components/
+      pipes/
+      guards/
+      interceptors/
+  assets/
+    dados/
+      dados_alunos.json
+      dados_matriculas.json
+      dados_professores.json
+      dados_turmas.json
+    galeria/
+
+---
+
+## COMO EXECUTAR O PROJETO
+
+1. Navegue para o diretório correto:
+cd "C:\Users\carlo\OneDrive\Área de Trabalho\SIGE\SIGE_V1\sige-v1"
+
+2. Instale as dependências:
+npm.cmd install
+
+3. Inicie o servidor:
+npm.cmd start
+
+4. Acesse no navegador:
+http://localhost:4200
+
+5. Vá para a página de login:
+http://localhost:4200/login
+
+6. Use as credenciais:
+Email: admin@sige.edu.br
+Senha: 123456
+
+---
+
+Esta estrutura cobre todos os aspectos do sistema SIGE identificados no projeto e permite escalabilidade para futuras funcionalidades.
+
+Total de Endpoints API: 200+
+Módulos da API: 12
+Métodos HTTP: GET, POST, PUT, PATCH, DELETE
+Autenticação: JWT Bearer Token
+Paginação: Padrão em todas as listagens
+Filtros: Disponíveis em endpoints de listagem
+Upload: Suporte a arquivos e imagens
+Relatórios: Geração em PDF/Excel
+Notificações: Sistema em tempo real
