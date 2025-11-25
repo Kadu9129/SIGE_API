@@ -9,7 +9,6 @@ namespace SIGE.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class DashboardController : ControllerBase
     {
         private readonly SIGEDbContext _context;

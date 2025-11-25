@@ -9,7 +9,6 @@ namespace SIGE.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class AlunosController : ControllerBase
     {
         private readonly IAlunoService _alunoService;
@@ -63,12 +62,29 @@ namespace SIGE.API.Controllers
         }
 
         /// <summary>
+        /// Obter aluno pelo ID do usuário vinculado
+        /// </summary>
+        /// <param name="usuarioId">ID do usuário</param>
+        /// <returns>Dados do aluno vinculado ao usuário</returns>
+        [HttpGet("por-usuario/{usuarioId}")]
+        public async Task<ActionResult<ApiResponse<AlunoDto>>> GetAlunoPorUsuario(int usuarioId)
+        {
+            var result = await _alunoService.GetAlunoByUsuarioIdAsync(usuarioId);
+
+            if (!result.Success)
+            {
+                return result.StatusCode == 404 ? NotFound(result) : BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        /// <summary>
         /// Criar novo aluno
         /// </summary>
         /// <param name="createAlunoDto">Dados do aluno</param>
         /// <returns>Aluno criado</returns>
         [HttpPost]
-        [Authorize(Roles = "Admin,Diretor")]
         public async Task<ActionResult<ApiResponse<AlunoDto>>> CreateAluno(
             [FromBody] CreateAlunoDto createAlunoDto)
         {
@@ -97,7 +113,6 @@ namespace SIGE.API.Controllers
         /// <param name="updateAlunoDto">Dados para atualização</param>
         /// <returns>Aluno atualizado</returns>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Diretor")]
         public async Task<ActionResult<ApiResponse<AlunoDto>>> UpdateAluno(
             int id,
             [FromBody] UpdateAlunoDto updateAlunoDto)
@@ -128,7 +143,6 @@ namespace SIGE.API.Controllers
         /// <param name="id">ID do aluno</param>
         /// <returns>Confirmação da remoção</returns>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse<bool>>> DeleteAluno(int id)
         {
             var result = await _alunoService.DeleteAlunoAsync(id);
@@ -164,7 +178,6 @@ namespace SIGE.API.Controllers
         /// <param name="status">Novo status</param>
         /// <returns>Confirmação da alteração</returns>
         [HttpPatch("{id}/status")]
-        [Authorize(Roles = "Admin,Diretor")]
         public async Task<ActionResult<ApiResponse<bool>>> ChangeStatus(
             int id,
             [FromBody] [Required] StatusAluno status)
@@ -186,7 +199,6 @@ namespace SIGE.API.Controllers
         /// <param name="foto">Arquivo da foto</param>
         /// <returns>URL da foto</returns>
         [HttpPost("{id}/foto")]
-        [Authorize(Roles = "Admin,Diretor")]
         public async Task<ActionResult<ApiResponse<string>>> UploadFoto(
             int id,
             IFormFile foto)

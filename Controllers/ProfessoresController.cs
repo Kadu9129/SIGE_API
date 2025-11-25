@@ -9,7 +9,6 @@ namespace SIGE.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class ProfessoresController : ControllerBase
     {
         private readonly IProfessorService _professorService;
@@ -68,7 +67,6 @@ namespace SIGE.API.Controllers
         /// <param name="createProfessorDto">Dados do professor</param>
         /// <returns>Professor criado</returns>
         [HttpPost]
-        [Authorize(Roles = "Admin,Diretor")]
         public async Task<ActionResult<ApiResponse<ProfessorDto>>> CreateProfessor(
             [FromBody] CreateProfessorDto createProfessorDto)
         {
@@ -97,7 +95,6 @@ namespace SIGE.API.Controllers
         /// <param name="updateProfessorDto">Dados para atualização</param>
         /// <returns>Professor atualizado</returns>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Diretor")]
         public async Task<ActionResult<ApiResponse<ProfessorDto>>> UpdateProfessor(
             int id,
             [FromBody] UpdateProfessorDto updateProfessorDto)
@@ -128,7 +125,6 @@ namespace SIGE.API.Controllers
         /// <param name="id">ID do professor</param>
         /// <returns>Confirmação da remoção</returns>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse<bool>>> DeleteProfessor(int id)
         {
             var result = await _professorService.DeleteProfessorAsync(id);
@@ -187,7 +183,6 @@ namespace SIGE.API.Controllers
         /// <param name="anoLetivo">Ano letivo</param>
         /// <returns>Confirmação da atribuição</returns>
         [HttpPost("{id}/disciplinas/{disciplinaId}")]
-        [Authorize(Roles = "Admin,Diretor")]
         public async Task<ActionResult<ApiResponse<bool>>> AtribuirDisciplina(
             int id,
             int disciplinaId,
@@ -209,7 +204,6 @@ namespace SIGE.API.Controllers
         /// <param name="anoLetivo">Ano letivo</param>
         /// <returns>Confirmação da remoção</returns>
         [HttpDelete("{id}/disciplinas/{disciplinaId}")]
-        [Authorize(Roles = "Admin,Diretor")]
         public async Task<ActionResult<ApiResponse<bool>>> RemoverDisciplina(
             int id,
             int disciplinaId,
@@ -230,7 +224,6 @@ namespace SIGE.API.Controllers
         /// <param name="status">Novo status</param>
         /// <returns>Confirmação da alteração</returns>
         [HttpPatch("{id}/status")]
-        [Authorize(Roles = "Admin,Diretor")]
         public async Task<ActionResult<ApiResponse<bool>>> ChangeStatus(
             int id,
             [FromBody] [Required] StatusProfessor status)

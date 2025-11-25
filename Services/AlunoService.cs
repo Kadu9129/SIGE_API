@@ -102,6 +102,31 @@ namespace SIGE.API.Services
             }
         }
 
+        public async Task<ApiResponse<AlunoDto>> GetAlunoByUsuarioIdAsync(int usuarioId)
+        {
+            try
+            {
+                var aluno = await _context.Alunos
+                    .Include(a => a.Usuario)
+                    .Include(a => a.Escola)
+                    .Include(a => a.Matriculas)
+                        .ThenInclude(m => m.Turma)
+                    .FirstOrDefaultAsync(a => a.UsuarioId == usuarioId);
+
+                if (aluno == null)
+                {
+                    return ApiResponse<AlunoDto>.Error("Aluno não encontrado para o usuário informado", 404);
+                }
+
+                var alunoDto = _mapper.Map<AlunoDto>(aluno);
+                return ApiResponse<AlunoDto>.Ok(alunoDto);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<AlunoDto>.Error($"Erro ao buscar aluno por usuário: {ex.Message}");
+            }
+        }
+
         public async Task<ApiResponse<AlunoDto>> CreateAlunoAsync(CreateAlunoDto createAlunoDto)
         {
             try

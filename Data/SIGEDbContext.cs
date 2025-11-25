@@ -259,6 +259,243 @@ namespace SIGE.API.Data
                 }
             );
 
+            // Usuários adicionais (Diretor, Professores, Alunos, Responsável)
+            var senhaPadrao = BCrypt.Net.BCrypt.HashPassword("123456");
+            modelBuilder.Entity<Usuario>().HasData(
+                new Usuario { Id = 2, Nome = "Diretor Geral", Email = "diretor@sige.edu.br", SenhaHash = senhaPadrao, TipoUsuario = TipoUsuario.Diretor, Status = StatusUsuario.Ativo, DataCriacao = DateTime.UtcNow, DataUltimaAtualizacao = DateTime.UtcNow },
+                new Usuario { Id = 3, Nome = "Prof. Ana Souza", Email = "ana.souza@sige.edu.br", SenhaHash = senhaPadrao, TipoUsuario = TipoUsuario.Professor, Status = StatusUsuario.Ativo, DataCriacao = DateTime.UtcNow, DataUltimaAtualizacao = DateTime.UtcNow },
+                new Usuario { Id = 4, Nome = "Prof. Carlos Lima", Email = "carlos.lima@sige.edu.br", SenhaHash = senhaPadrao, TipoUsuario = TipoUsuario.Professor, Status = StatusUsuario.Ativo, DataCriacao = DateTime.UtcNow, DataUltimaAtualizacao = DateTime.UtcNow },
+                new Usuario { Id = 5, Nome = "Aluno João Silva", Email = "joao.silva@sige.edu.br", SenhaHash = senhaPadrao, TipoUsuario = TipoUsuario.Aluno, Status = StatusUsuario.Ativo, DataCriacao = DateTime.UtcNow, DataUltimaAtualizacao = DateTime.UtcNow },
+                new Usuario { Id = 6, Nome = "Aluno Maria Santos", Email = "maria.santos@sige.edu.br", SenhaHash = senhaPadrao, TipoUsuario = TipoUsuario.Aluno, Status = StatusUsuario.Ativo, DataCriacao = DateTime.UtcNow, DataUltimaAtualizacao = DateTime.UtcNow },
+                new Usuario { Id = 7, Nome = "Aluno Pedro Alves", Email = "pedro.alves@sige.edu.br", SenhaHash = senhaPadrao, TipoUsuario = TipoUsuario.Aluno, Status = StatusUsuario.Ativo, DataCriacao = DateTime.UtcNow, DataUltimaAtualizacao = DateTime.UtcNow },
+                new Usuario { Id = 8, Nome = "Aluno Luana Costa", Email = "luana.costa@sige.edu.br", SenhaHash = senhaPadrao, TipoUsuario = TipoUsuario.Aluno, Status = StatusUsuario.Ativo, DataCriacao = DateTime.UtcNow, DataUltimaAtualizacao = DateTime.UtcNow },
+                new Usuario { Id = 9, Nome = "Aluno Rafael Pereira", Email = "rafael.pereira@sige.edu.br", SenhaHash = senhaPadrao, TipoUsuario = TipoUsuario.Aluno, Status = StatusUsuario.Ativo, DataCriacao = DateTime.UtcNow, DataUltimaAtualizacao = DateTime.UtcNow },
+                new Usuario { Id = 10, Nome = "Resp. Fernanda Silva", Email = "fernanda.silva@sige.edu.br", SenhaHash = senhaPadrao, TipoUsuario = TipoUsuario.Responsavel, Status = StatusUsuario.Ativo, DataCriacao = DateTime.UtcNow, DataUltimaAtualizacao = DateTime.UtcNow }
+            );
+
+            // Escola e Curso
+            modelBuilder.Entity<Escola>().HasData(
+                new Escola
+                {
+                    Id = 1,
+                    Nome = "Escola Central",
+                    CNPJ = "00.000.000/0001-00",
+                    Endereco = "Rua Principal, 100",
+                    Cidade = "São Paulo",
+                    Estado = "SP",
+                    CEP = "01000-000",
+                    Telefone = "1130000000",
+                    Email = "contato@escolacentral.edu.br",
+                    DiretorId = 2,
+                    Status = StatusEscola.Ativa
+                }
+            );
+
+            modelBuilder.Entity<Curso>().HasData(
+                new Curso
+                {
+                    Id = 1,
+                    EscolaId = 1,
+                    Nome = "Ensino Fundamental",
+                    Codigo = "FUND1",
+                    Descricao = "Curso de Ensino Fundamental Anos Iniciais",
+                    DuracaoAnos = 5,
+                    NivelEnsino = NivelEnsino.Fundamental1,
+                    Status = true
+                }
+            );
+
+            // Professores
+            modelBuilder.Entity<Professor>().HasData(
+                new Professor
+                {
+                    Id = 1,
+                    UsuarioId = 3,
+                    CodigoProfessor = "PROF001",
+                    NomeCompleto = "Ana Souza",
+                    CPF = "11111111111",
+                    RG = "1111111",
+                    DataNascimento = new DateTime(1985, 5, 10),
+                    Formacao = "Licenciatura em Matemática",
+                    Especializacao = "Educação Inclusiva",
+                    DataAdmissao = new DateTime(2022, 2, 1),
+                    Status = StatusProfessor.Ativo,
+                    Salario = 4500.00m,
+                    CargaHorariaSemanal = 40,
+                    EscolaId = 1
+                },
+                new Professor
+                {
+                    Id = 2,
+                    UsuarioId = 4,
+                    CodigoProfessor = "PROF002",
+                    NomeCompleto = "Carlos Lima",
+                    CPF = "22222222222",
+                    RG = "2222222",
+                    DataNascimento = new DateTime(1980, 8, 20),
+                    Formacao = "Licenciatura em Português",
+                    Especializacao = "Literatura Brasileira",
+                    DataAdmissao = new DateTime(2021, 3, 15),
+                    Status = StatusProfessor.Ativo,
+                    Salario = 4700.00m,
+                    CargaHorariaSemanal = 40,
+                    EscolaId = 1
+                }
+            );
+
+            // Turmas
+            modelBuilder.Entity<Turma>().HasData(
+                new Turma
+                {
+                    Id = 1,
+                    Codigo = "TURMA1",
+                    Nome = "1º Ano A",
+                    AnoLetivo = 2025,
+                    Serie = "1º",
+                    Turno = Turno.Matutino,
+                    CapacidadeMaxima = 30,
+                    CursoId = 1,
+                    ProfessorCoordenadorId = 1,
+                    Sala = "101",
+                    Status = StatusTurma.Ativa
+                },
+                new Turma
+                {
+                    Id = 2,
+                    Codigo = "TURMA2",
+                    Nome = "2º Ano A",
+                    AnoLetivo = 2025,
+                    Serie = "2º",
+                    Turno = Turno.Vespertino,
+                    CapacidadeMaxima = 30,
+                    CursoId = 1,
+                    ProfessorCoordenadorId = 2,
+                    Sala = "102",
+                    Status = StatusTurma.Ativa
+                }
+            );
+
+            // Responsável
+            modelBuilder.Entity<Responsavel>().HasData(
+                new Responsavel
+                {
+                    Id = 1,
+                    UsuarioId = 10,
+                    NomeCompleto = "Fernanda Silva",
+                    CPF = "33333333333",
+                    RG = "3333333",
+                    Telefone = "11999990000",
+                    Email = "fernanda.silva@sige.edu.br",
+                    Endereco = "Rua Principal, 100",
+                    Parentesco = Parentesco.Mae,
+                    Principal = true
+                }
+            );
+
+            // Alunos
+            modelBuilder.Entity<Aluno>().HasData(
+                new Aluno
+                {
+                    Id = 1,
+                    UsuarioId = 5,
+                    Matricula = "ALU001",
+                    NomeCompleto = "João Silva",
+                    DataNascimento = new DateTime(2016, 3, 15),
+                    Sexo = Sexo.M,
+                    CPF = "44444444441",
+                    Endereco = "Rua A, 10",
+                    Cidade = "São Paulo",
+                    Estado = "SP",
+                    CEP = "01000-001",
+                    Status = StatusAluno.Matriculado,
+                    DataMatricula = new DateTime(2025, 1, 10),
+                    EscolaId = 1
+                },
+                new Aluno
+                {
+                    Id = 2,
+                    UsuarioId = 6,
+                    Matricula = "ALU002",
+                    NomeCompleto = "Maria Santos",
+                    DataNascimento = new DateTime(2016, 6, 21),
+                    Sexo = Sexo.F,
+                    CPF = "44444444442",
+                    Endereco = "Rua B, 20",
+                    Cidade = "São Paulo",
+                    Estado = "SP",
+                    CEP = "01000-002",
+                    Status = StatusAluno.Matriculado,
+                    DataMatricula = new DateTime(2025, 1, 10),
+                    EscolaId = 1
+                },
+                new Aluno
+                {
+                    Id = 3,
+                    UsuarioId = 7,
+                    Matricula = "ALU003",
+                    NomeCompleto = "Pedro Alves",
+                    DataNascimento = new DateTime(2016, 9, 5),
+                    Sexo = Sexo.M,
+                    CPF = "44444444443",
+                    Endereco = "Rua C, 30",
+                    Cidade = "São Paulo",
+                    Estado = "SP",
+                    CEP = "01000-003",
+                    Status = StatusAluno.Matriculado,
+                    DataMatricula = new DateTime(2025, 1, 10),
+                    EscolaId = 1
+                },
+                new Aluno
+                {
+                    Id = 4,
+                    UsuarioId = 8,
+                    Matricula = "ALU004",
+                    NomeCompleto = "Luana Costa",
+                    DataNascimento = new DateTime(2016, 11, 18),
+                    Sexo = Sexo.F,
+                    CPF = "44444444444",
+                    Endereco = "Rua D, 40",
+                    Cidade = "São Paulo",
+                    Estado = "SP",
+                    CEP = "01000-004",
+                    Status = StatusAluno.Matriculado,
+                    DataMatricula = new DateTime(2025, 1, 10),
+                    EscolaId = 1
+                },
+                new Aluno
+                {
+                    Id = 5,
+                    UsuarioId = 9,
+                    Matricula = "ALU005",
+                    NomeCompleto = "Rafael Pereira",
+                    DataNascimento = new DateTime(2016, 12, 2),
+                    Sexo = Sexo.M,
+                    CPF = "44444444445",
+                    Endereco = "Rua E, 50",
+                    Cidade = "São Paulo",
+                    Estado = "SP",
+                    CEP = "01000-005",
+                    Status = StatusAluno.Matriculado,
+                    DataMatricula = new DateTime(2025, 1, 10),
+                    EscolaId = 1
+                }
+            );
+
+            // Vínculos Aluno-Responsável
+            modelBuilder.Entity<AlunoResponsavel>().HasData(
+                new AlunoResponsavel { Id = 1, AlunoId = 1, ResponsavelId = 1, DataVinculo = DateTime.UtcNow },
+                new AlunoResponsavel { Id = 2, AlunoId = 2, ResponsavelId = 1, DataVinculo = DateTime.UtcNow }
+            );
+
+            // Matrículas (ligam Aluno à Turma)
+            modelBuilder.Entity<Matricula>().HasData(
+                new Matricula { Id = 1, NumeroMatricula = "MAT-2025-001", AlunoId = 1, TurmaId = 1, AnoLetivo = 2025, DataMatricula = new DateTime(2025,1,10), Status = StatusMatricula.Ativa },
+                new Matricula { Id = 2, NumeroMatricula = "MAT-2025-002", AlunoId = 2, TurmaId = 1, AnoLetivo = 2025, DataMatricula = new DateTime(2025,1,10), Status = StatusMatricula.Ativa },
+                new Matricula { Id = 3, NumeroMatricula = "MAT-2025-003", AlunoId = 3, TurmaId = 1, AnoLetivo = 2025, DataMatricula = new DateTime(2025,1,10), Status = StatusMatricula.Ativa },
+                new Matricula { Id = 4, NumeroMatricula = "MAT-2025-004", AlunoId = 4, TurmaId = 2, AnoLetivo = 2025, DataMatricula = new DateTime(2025,1,10), Status = StatusMatricula.Ativa },
+                new Matricula { Id = 5, NumeroMatricula = "MAT-2025-005", AlunoId = 5, TurmaId = 2, AnoLetivo = 2025, DataMatricula = new DateTime(2025,1,10), Status = StatusMatricula.Ativa }
+            );
+
             // Configurações iniciais do sistema
             modelBuilder.Entity<ConfiguracaoSistema>().HasData(
                 new ConfiguracaoSistema

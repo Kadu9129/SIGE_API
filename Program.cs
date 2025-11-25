@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+// JWT removido para MVP simples sem autenticação
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -13,9 +13,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-// Entity Framework
+// Entity Framework - SQLite file in Data folder
+var dbRelative = builder.Configuration.GetConnectionString("DefaultConnection");
+var dataFolder = Path.Combine(builder.Environment.ContentRootPath, "Data");
+Directory.CreateDirectory(dataFolder);
+// Normalize connection string if relative path used
+string dbPath = Path.Combine(builder.Environment.ContentRootPath, dbRelative!
+    .Replace("Data Source=", string.Empty)
+    .Replace("\\", Path.DirectorySeparatorChar.ToString())
+    .Replace("/", Path.DirectorySeparatorChar.ToString()));
+var normalizedConn = $"Data Source={dbPath}";
+
 builder.Services.AddDbContext<SIGEDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(normalizedConn));
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
@@ -26,31 +36,7 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IAlunoService, AlunoService>();
 builder.Services.AddScoped<IProfessorService, ProfessorService>();
 
-// JWT Authentication
-var jwtSettings = builder.Configuration.GetSection("Jwt");
-var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
-
-builder.Services.AddAuthentication(x =>
-{
-    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(x =>
-{
-    x.RequireHttpsMetadata = false;
-    x.SaveToken = true;
-    x.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
-    };
-});
+// Removido JWT para MVP: endpoints públicos
 
 // CORS
 builder.Services.AddCors(options =>
@@ -103,33 +89,7 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 
-    // JWT Authorization
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header usando o esquema Bearer. Exemplo: \"Authorization: Bearer {token}\"",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                },
-                Scheme = "oauth2",
-                Name = "Bearer",
-                In = ParameterLocation.Header,
-            },
-            new List<string>()
-        }
-    });
+    // Segurança JWT omitida no MVP
 
     // Include XML comments
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -161,7 +121,15 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<SIGEDbContext>();
     try
     {
-        context.Database.EnsureCreated();
+        // Prefer migrations (Database.Migrate) if they exist; fallback to EnsureCreated for first run
+        try
+        {
+            context.Database.Migrate();
+        }
+        catch
+        {
+            context.Database.EnsureCreated();
+        }
     }
     catch (Exception ex)
     {
@@ -179,9 +147,7 @@ app.UseStaticFiles();
 // CORS
 app.UseCors("AllowAngularApp");
 
-// Authentication & Authorization
-app.UseAuthentication();
-app.UseAuthorization();
+// Autenticação/Autorização removidas no MVP
 
 // Global error handling
 app.UseMiddleware<ErrorHandlingMiddleware>();

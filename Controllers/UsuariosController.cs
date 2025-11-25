@@ -8,7 +8,6 @@ namespace SIGE.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class UsuariosController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
@@ -60,7 +59,6 @@ namespace SIGE.API.Controllers
         /// <param name="createUsuarioDto">Dados do usuário</param>
         /// <returns>Usuário criado</returns>
         [HttpPost]
-        [Authorize(Roles = "Admin,Diretor")]
         public async Task<ActionResult<UsuarioDto>> CreateUsuario([FromBody] CreateUsuarioDto createUsuarioDto)
         {
             if (!ModelState.IsValid)
@@ -81,7 +79,6 @@ namespace SIGE.API.Controllers
         /// <param name="updateUsuarioDto">Dados atualizados</param>
         /// <returns>Usuário atualizado</returns>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Diretor")]
         public async Task<ActionResult<UsuarioDto>> UpdateUsuario(int id, [FromBody] UpdateUsuarioDto updateUsuarioDto)
         {
             if (!ModelState.IsValid)
@@ -101,7 +98,6 @@ namespace SIGE.API.Controllers
         /// <param name="id">ID do usuário</param>
         /// <returns>Status da operação</returns>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
             var result = await _usuarioService.DeleteAsync(id);
@@ -119,7 +115,6 @@ namespace SIGE.API.Controllers
         /// <param name="status">Novo status</param>
         /// <returns>Status da operação</returns>
         [HttpPatch("{id}/status")]
-        [Authorize(Roles = "Admin,Diretor")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] StatusUsuario status)
         {
             var result = await _usuarioService.UpdateStatusAsync(id, status);

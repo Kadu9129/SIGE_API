@@ -7,7 +7,6 @@ namespace SIGE.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class EscolasController : ControllerBase
     {
         private readonly IEscolaService _escolaService;
@@ -59,7 +58,6 @@ namespace SIGE.API.Controllers
         /// <param name="createEscolaDto">Dados da escola</param>
         /// <returns>Escola criada</returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<EscolaDto>> CreateEscola([FromBody] CreateEscolaDto createEscolaDto)
         {
             if (!ModelState.IsValid)
@@ -80,7 +78,6 @@ namespace SIGE.API.Controllers
         /// <param name="updateEscolaDto">Dados atualizados</param>
         /// <returns>Escola atualizada</returns>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Diretor")]
         public async Task<ActionResult<EscolaDto>> UpdateEscola(int id, [FromBody] UpdateEscolaDto updateEscolaDto)
         {
             if (!ModelState.IsValid)
@@ -100,7 +97,6 @@ namespace SIGE.API.Controllers
         /// <param name="id">ID da escola</param>
         /// <returns>Status da operação</returns>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteEscola(int id)
         {
             var result = await _escolaService.DeleteAsync(id);

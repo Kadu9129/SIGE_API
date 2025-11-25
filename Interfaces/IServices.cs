@@ -41,6 +41,7 @@ namespace SIGE.API.Interfaces
     {
         Task<ApiResponse<PaginatedResponse<AlunoDto>>> GetAlunosAsync(int page = 1, int pageSize = 10, string? search = null, int? escolaId = null, StatusAluno? status = null);
         Task<ApiResponse<AlunoDto>> GetAlunoByIdAsync(int id);
+        Task<ApiResponse<AlunoDto>> GetAlunoByUsuarioIdAsync(int usuarioId);
         Task<ApiResponse<AlunoDto>> CreateAlunoAsync(CreateAlunoDto createAlunoDto);
         Task<ApiResponse<AlunoDto>> UpdateAlunoAsync(int id, UpdateAlunoDto updateAlunoDto);
         Task<ApiResponse<bool>> DeleteAlunoAsync(int id);
