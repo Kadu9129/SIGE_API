@@ -13,6 +13,7 @@ namespace SIGE.API.Models
 
     public enum StatusTurma
     {
+        Planejada,
         Ativa,
         Finalizada,
         Cancelada

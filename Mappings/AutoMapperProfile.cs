@@ -105,13 +105,17 @@ namespace SIGE.API.Mappings
             // Turma mappings
             CreateMap<Turma, TurmaDto>()
                 .ForMember(dest => dest.NomeCurso, opt => opt.MapFrom(src => src.Curso.Nome))
-                .ForMember(dest => dest.NomeProfessorCoordenador, opt => opt.MapFrom(src => src.ProfessorCoordenador != null ? src.ProfessorCoordenador.NomeCompleto : null));
+                .ForMember(dest => dest.NomeProfessorCoordenador, opt => opt.MapFrom(src => src.ProfessorCoordenador != null ? src.ProfessorCoordenador.NomeCompleto : null))
+                .ForMember(dest => dest.Alunos, opt => opt.MapFrom(src => src.Matriculas));
             
             CreateMap<CreateTurmaDto, Turma>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             
             CreateMap<UpdateTurmaDto, Turma>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
+
+            CreateMap<Matricula, TurmaAlunoResumoDto>()
+                .ForMember(dest => dest.NomeAluno, opt => opt.MapFrom(src => src.Aluno.NomeCompleto));
 
             // Matricula mappings
             CreateMap<Matricula, MatriculaDto>()

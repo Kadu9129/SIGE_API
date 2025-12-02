@@ -18,6 +18,46 @@ namespace SIGE.API.DTOs
         public string? NomeProfessorCoordenador { get; set; }
         public string? Sala { get; set; }
         public StatusTurma Status { get; set; }
+        public List<TurmaAlunoResumoDto> Alunos { get; set; } = new();
+    }
+
+    public class TurmaAlunoResumoDto
+    {
+        public int MatriculaId { get; set; }
+        public int AlunoId { get; set; }
+        public string NomeAluno { get; set; } = string.Empty;
+        public string NumeroMatricula { get; set; } = string.Empty;
+        public StatusMatricula Status { get; set; }
+    }
+
+    public class TurmaCatalogoProfessorDto
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        public string? Especialidade { get; set; }
+    }
+
+    public class TurmaCatalogoAlunoDto
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        public string? Serie { get; set; }
+        public string? Matricula { get; set; }
+    }
+
+    public class TurmaCatalogoCursoDto
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        public string Codigo { get; set; } = string.Empty;
+        public string? Nivel { get; set; }
+    }
+
+    public class TurmaCatalogosDto
+    {
+        public List<TurmaCatalogoCursoDto> Cursos { get; set; } = new();
+        public List<TurmaCatalogoProfessorDto> Professores { get; set; } = new();
+        public List<TurmaCatalogoAlunoDto> Alunos { get; set; } = new();
     }
 
     public class CreateTurmaDto
@@ -53,6 +93,8 @@ namespace SIGE.API.DTOs
         public string? Sala { get; set; }
 
         public StatusTurma Status { get; set; } = StatusTurma.Ativa;
+
+        public List<int> AlunoIds { get; set; } = new();
     }
 
     public class UpdateTurmaDto
@@ -89,6 +131,8 @@ namespace SIGE.API.DTOs
 
         [Required(ErrorMessage = "Status é obrigatório")]
         public StatusTurma Status { get; set; }
+
+        public List<int> AlunoIds { get; set; } = new();
     }
 
     public class MatriculaDto

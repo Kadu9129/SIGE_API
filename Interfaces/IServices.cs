@@ -63,6 +63,17 @@ namespace SIGE.API.Interfaces
         Task<ApiResponse<bool>> ChangeStatusAsync(int id, StatusProfessor status);
     }
 
+    public interface ITurmaService
+    {
+        Task<ApiResponse<PaginatedResponse<TurmaDto>>> GetTurmasAsync(int page = 1, int pageSize = 10, string? search = null, int? cursoId = null, int? anoLetivo = null, StatusTurma? status = null);
+        Task<ApiResponse<TurmaDto>> GetTurmaByIdAsync(int id);
+        Task<ApiResponse<TurmaDto>> CreateTurmaAsync(CreateTurmaDto createTurmaDto);
+        Task<ApiResponse<TurmaDto>> UpdateTurmaAsync(int id, UpdateTurmaDto updateTurmaDto);
+        Task<ApiResponse<bool>> DeleteTurmaAsync(int id);
+        Task<ApiResponse<bool>> ChangeStatusAsync(int id, StatusTurma status);
+        Task<ApiResponse<TurmaCatalogosDto>> GetCatalogosAsync();
+    }
+
     public interface ICursoService
     {
         Task<IEnumerable<CursoDto>> GetAllAsync(int page = 1, int pageSize = 15, string? search = null);
